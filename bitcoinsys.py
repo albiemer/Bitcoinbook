@@ -15,7 +15,7 @@ bitcoinsys.py see the meaning according to the number declared in multi comment
     This is the function to print current bitcoin price in the market and
     it is located from external file named note.py
 5. nofoundrecordnote()
-    This is the function to print "NO FOUND RECORDS" in search function.
+    Th/is is the function to print "NO FOUND RECORDS" in search function.
 6. getbitcoinprice()
     This is the function that print the current bitcoin price. This function are
     located from external file named bitcoinprice.py
@@ -32,6 +32,7 @@ from prettytable import PrettyTable, from_db_cursor
 from bitcoinprice import getbitcoinprice
 from note import noteonly, title, clrscr, nofoundrecordnote, foundrecordnote, opthead, entryinvalid
 from forex_python.converter import CurrencyRates
+from mypredict import totalpredict
 
 x = PrettyTable()
 errmain = 0
@@ -97,7 +98,7 @@ class classconn:
             del mysearch
     
     def updateoptlabel():
-        print("[1]BTC RATE\n[2]BTC BALANCE\n[3]PHP COST\n[4]PHP BALANCE\n[5]PROFIT / LOSS\n[6]Volume")
+        print("[1]BTC RATE\n[2]BTC BALANCE\n[3]DOLLAR COST\n[4]PHP BALANCE\n[5]PROFIT / LOSS\n[6]Volume")
 
 
 # you can use this as one function but its not necessary
@@ -261,8 +262,8 @@ def mycol(mysearch):
     
     # This is from the libarary prettytable to make a design fields and row for
     # the terminal designed system
-    x.field_names = ["ID", "BTC_Rate", "BTC_Balance", "DOLLAR_Cost", "PHP_Balance", "Profit_Or_Loss", "PH_Currency"]
-    x.add_row([row[0], row[1], row[2], row[3], row[4], row[5], row[6]])
+    x.field_names = ["ID", "BTC_Rate", "BTC_Balance", "DOLLAR_Cost", "PHP_Balance", "Profit_Or_Loss", "PH_Currency", "BTC_Predict"]
+    x.add_row([row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]])
     
     # This variable mysearch are reassiged after mysearch from parameter used
     # the mysearch assigned with row[0], row[0] is the data ID of the specific
@@ -333,35 +334,39 @@ def entryrecord():
         c.execute("select * from BITCOIN_TABLE order by ID desc limit 1")
         row = c.fetchone()
         try:
-            #btcbalance = row[2]
-            dollarcost = row[3]
-            btcbalance = dollarcost * 4.94888E-5
+            btcbalance = row[2]#float(input("\nENTER BTC BALANCE: "))
+            dollarcost = row[3]#float(input("ENTER PHP COST: "))
             if row[6] == None:
                 currency = Currency
             else:
                 currency = Currency
-                
+            
         except:
-            #btcbalance = float(input("\nENTER BTC BALANCE: "))
-            dollarcost = float(input("ENTER DOLLAR COST: "))
-            btcbalance = dollarcost * 4.94888E-5
+            btcbalance = float(input("\nENTER BTC BALANCE: "))
+            dollarcost = btcrate * btcbalance #float(input("ENTER DOLLAR COST: "))
             currency = Currency
         
-        dollarbalance = btcrate * btcbalance       #
-        phpbalance = float(dollarbalance) * currency     #
-        profitorloss = float(phpbalance) - (float(dollarcost) * currency)   #
+        dollarbalance = btcrate * btcbalance
+        phpbalance = float(dollarbalance) * currency
+        profitorloss = float(phpbalance) - (float(dollarcost) * currency)
         #phpbalance = int(phpbalance)
-        insertrecord(btcrate, btcbalance, dollarcost, phpbalance, profitorloss, currency)
+        
+        mypredict = round(totalpredict(), 2)
+        currency = round(currency, 2)
+        dollarcost = round(dollarcost, 2)
+        phpbalance = round(phpbalance, 2)
+        profitorloss = round(profitorloss, 2)
+        insertrecord(btcrate, btcbalance, dollarcost, phpbalance, profitorloss, currency, mypredict)
         
     except:
         searchrecord(None, None)
 
-def insertrecord(btcrate, btcbalance, dollarcost, phpbalance, profitorloss, currency):
+def insertrecord(btcrate, btcbalance, dollarcost, phpbalance, profitorloss, currency, mypredict):
     global conn, c
     
     classconn.mainconn()
     # this is an insert record execute for insert record function
-    c.execute("insert into BITCOIN_TABLE(BTC_Rate, BTC_Balance, DOLLAR_Cost, PHP_Balance, Profit_Or_Loss, PH_Currency) values (?,?,?,?,?,?)", (btcrate, btcbalance, dollarcost, phpbalance, profitorloss, currency))
+    c.execute("insert into BITCOIN_TABLE(BTC_Rate, BTC_Balance, DOLLAR_Cost, PHP_Balance, Profit_Or_Loss, PH_Currency, BTC_Predict) values (?,?,?,?,?,?,?)", (btcrate, btcbalance, dollarcost, phpbalance, profitorloss, currency, mypredict))
     print("\nINSERTED DATA SUCCESSFULLY")
     input()
     connclose()
@@ -414,7 +419,8 @@ def updaterecord(mysearch):
             dollarcostupdate = float(input("ENTER NEW DOLLAR COST: "))
             classconn.mainconn()
             c.execute("update BITCOIN_TABLE set DOLLAR_Cost = ? where ID = ?", (dollarcostupdate, idselection))
-            connclose()
+            conn.commit()
+            conn.close()
 
             printupdaterecord(idselection)
         
@@ -422,7 +428,8 @@ def updaterecord(mysearch):
             phpbalanceupdate = float(input("ENTER NEW PHP BALANCE: "))
             classconn.mainconn()
             c.execute("update BITCOIN_TABLE set PHP_Balance = ? where ID = ?", (phpbalanceupdate, idselection,))
-            connclose()
+            conn.commit()
+            conn.close()
 
             printupdaterecord(idselection)
 
@@ -430,7 +437,8 @@ def updaterecord(mysearch):
             profitupdate = float(input("ENTER NEW PROFIT: "))
             classconn.mainconn()
             c.execute("update BITCOIN_TABLE set Profit_Or_Loss = ? where ID = ?", (profitupdate, idselection))
-            connclose()
+            conn.commit()
+            conn.close()
 
             printupdaterecord(idselection)
             
@@ -438,7 +446,8 @@ def updaterecord(mysearch):
             volumeupdate = float(input("ENTER NEW Volume: "))
             classconn.mainconn()
             c.execute("update BITCOIN_TABLE set Volume = ? where ID = ?", (volumeupdate, idselection))
-            connclose()
+            conn.commit()
+            conn.close()
             
             printupdaterecord(idselection)
 
@@ -485,7 +494,9 @@ def deleterecord(mysearch):
     classconn.mainconn()    
 
     c.execute("delete from BITCOIN_TABLE where ID = ?", (todelete,))
-    connclose()
+
+    conn.commit()
+    conn.close()
 
     print("\nDELETED SUCCESSFUL, PRESS ENTER TO REFRESH THE RECORD")
     input()
