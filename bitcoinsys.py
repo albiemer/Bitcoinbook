@@ -32,7 +32,7 @@ from prettytable import PrettyTable, from_db_cursor
 from bitcoinprice import getbitcoinprice
 from note import noteonly, title, clrscr, nofoundrecordnote, foundrecordnote, opthead, entryinvalid
 from forex_python.converter import CurrencyRates
-from mypredict import totalpredict
+from mypredict import totalpredict, myvisual, dbtocsvproc
 
 x = PrettyTable()
 errmain = 0
@@ -68,8 +68,9 @@ class classconn:
             
 
     def mycoloptcontrol(mysearch):
-        print("[U]pdate [D]elete [L]ast Record [A]ddnew Record")
-        print("\n\n\n\nTo exit and back to main menu type [n] or type [exit]")
+        print("[U]pdate [D]elete [L]ast Record [A]ddnew Record [P]RINT STARTED ID")
+        print("\n\n\n\n\n\n\n\n\n\n\n\n\n")
+        print("To exit and back to main menu type [n] or type [exit]")
         
         toexit = input("SEARCH RECORD? ")
             
@@ -92,6 +93,8 @@ class classconn:
             printlastrecord()
         elif toexit == 'a' or toexit == 'A':
             entryrecord()
+        elif toexit == 'p' or toexit == 'P':
+            dataprint()
         else:
             searchrecord(None, toexit)
             print("toexit")
@@ -134,14 +137,13 @@ def main():
         # the argument in updaterecord(None) should be initialized as None to avoid
         # error parameter sequence
         updaterecord(None)
-
     elif opt == '5':
-        # the function deleterecord() are located below next from printupdaterecord()
-        deleterecord(None)
-
+        dbtocsvproc()
+        myvisual()
+        main()
     elif opt == '6':
-            # this is an option to exit when you are at the main() function
-            exit()
+        # this is an option to exit when you are at the main() function
+        exit()
     elif opt == 'y' or opt == 'Y':
         clrscr()
         print("Invalid Key")
@@ -283,7 +285,7 @@ def mycol(mysearch):
 
 def printallrecord():
     classconn.mainconn()
-    c.execute("select * from BITCOIN_TABLE limit 5")
+    c.execute("select * from BITCOIN_TABLE limit 15")
 
     x = from_db_cursor(c)
     print(x)
