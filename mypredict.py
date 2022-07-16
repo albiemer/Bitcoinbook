@@ -46,7 +46,6 @@ def myvisual():
     plt.show()
     
 def dbtocsvproc():
-    mainconn()
     # This is only applicable for linux with installed sqlite3
     os.system("sqlite3 -header -csv bitcoindb.db \"select * from BITCOIN_TABLE;\" > BITCOIN_TABLE.csv")
     
