@@ -22,6 +22,9 @@ bitcoinsys.py see the meaning according to the number declared in multi comment
 7. foundrecordnote()
     The foundrecordnote() function is use to give a notice that record was found
     This function are located from external file named note.py
+8. getbitcoinprice()
+    The getbitcoinprice function is the function get real time bitcoin rate
+    on the internet
 
 """
 
@@ -32,7 +35,8 @@ from prettytable import PrettyTable, from_db_cursor
 from bitcoinprice import getbitcoinprice
 from note import noteonly, title, clrscr, nofoundrecordnote, foundrecordnote, opthead, entryinvalid
 from forex_python.converter import CurrencyRates
-from mypredict import totalpredict, myvisual, dbtocsvproc
+from mypredict import totalpredict, myvisual, dbtocsvproc, update_progress
+import threading
 
 x = PrettyTable()
 errmain = 0
@@ -138,22 +142,26 @@ def main():
         # error parameter sequence
         updaterecord(None)
     elif opt == '5':
+        # A dbtocsvproc() function are located in mypredict.py
+        # The purpose of dbtocsvproc() function is to export csv file from sqlite3 database 
         dbtocsvproc()
+        # myvisual() is a function that show bar graph analyzation for BTC_rate column
         myvisual()
+        # After process of dbtocsvproc() and myvisual() its automatically directed to main()
         main()
     elif opt == '6':
         # this is an option to exit when you are at the main() function
         exit()
     elif opt == 'y' or opt == 'Y':
-        clrscr()
-        print("Invalid Key")
+        clrscr()   #1
         main()
+        
     # the key are declared at the top
     # the purpose of this key is to be sure that any letter that you input in
     # variable opt from main function couldn't trigger error when memory is too much heavy
     # when you entry a letter that are in key, it could return to main menu or main()
     elif opt in key:
-        clrscr()
+        clrscr()    #
         print("Invalid Key")
         main()
     
@@ -179,8 +187,13 @@ def searchrecord(asearch, toexit):
         if asearch == None and toexit == None:
             mysearch = input("\n[n] to main MENU\nSEARCH RECORD: ")
         elif toexit == None:
+            # if asearch not not none then it will
+            # Assign asearch to mysearch that comes from parameter
+            # searchrecord(asearch, toexit)
             mysearch = asearch
         else:
+            # toexit is not None from searchrecord(asearch, toexit) then
+            # toexit will assign to mysearch variables
             mysearch = toexit
         global row
         
@@ -283,8 +296,12 @@ def mycol(mysearch):
 
 #---------------mycol--------------#
 
+# Printallrecord() function is to display a 15 records that started from 1 as
+# A initialized record data report from print all record
 def printallrecord():
+    # classconn.mainconn is a connection for sqlite3 database bitcoindb.db
     classconn.mainconn()
+    # This is the execution to select from BITCOIN_TABLE in sqlite3 database
     c.execute("select * from BITCOIN_TABLE limit 15")
 
     x = from_db_cursor(c)
@@ -293,49 +310,78 @@ def printallrecord():
 
 #------------printlastecord-----------#
 
+# This printlastrecord() is to display last record from sqlite3 database
 def printlastrecord():
-    clrscr()
+    clrscr()   #1
+    # global declaration for variable row
     global row
+    # classconn.mainconn is a connection for sqlite3 database bitcoindb.db
     classconn.mainconn()
+    # This SQL execution is to select last record and only disply 1 row
+    # which is the last record
     c.execute("select * from BITCOIN_TABLE order by ID desc limit 1")
+    # assigning c.fetchone to row
     row = c.fetchone()
+    # calling mycol(None) function with None or empty parameters
     mycol(None)
+    # Closing the sqlite3 database connection 
     connclose()
 
+# dataprint() function is to display selected started number of row to las record
 def dataprint():
-    keystrt = 'aAbBcCdDeEfFgGhHiIjJkKlLmMoOpPqQrRsStTuUvVwWxXzZ1234567890'
-    clrscr()
-    title()
+    clrscr()    #1
+    title()     #2
+    # classconn.mainconn is a connection for sqlite3 database bitcoindb.db
     classconn.mainconn()
+    # in case error in try then it will raise to except
     try:
+        # Input id to start selected id to display record
         strtid = input("ENTER START ID: ")
+        # This sql command is for selecting record 100 row but started id setoff
+        # by strtid
         c.execute("select * from BITCOIN_TABLE LIMIT 100 OFFSET {offid}".format(offid=strtid))
+        # assigning cursor c to x 
         x = from_db_cursor(c)
-    
+        # displaying x that resulted from the following above processs to display record 
         print(x)
-    
+        # classconn.dataprintoptcontrol() are located above inside class classconn    
         classconn.dataprintoptcontrol()
+        # Closing the sqlite3 database connection
         connclose()
+    # in case theres an error in try it will execute except
     except:
+        # The main() function are located at the top next from connclose()
+        # function
         main()
     
 #--------------dataprint end-------------#
 
 ###########ADDNEW RECORD##########
 
+# The entryrecord function is the function that you are able to entry new record
+# that calling first from the main() function and searchrecord() function
 def entryrecord():
+    # declaring global the variable volume
     global volume
-    clrscr()
-    title()
-    noteonly()
+    clrscr()    #1
+    title()     #2
+    noteonly()  #4
     
+    # assigning getbitcoinprice to btcrate
     btcrate = getbitcoinprice()
+    # Printallrecord() function is to display a 15 records that started from 1 as
+    # A initialized record data report from print all record
     printallrecord()
     try:
+        # classconn.mainconn is a connection for sqlite3 database bitcoindb.db
         classconn.mainconn()
+        # To execute query to select from sqlite3 dbase which is the last record
+        # only selected from this query
         c.execute("select * from BITCOIN_TABLE order by ID desc limit 1")
+        # assigning c cursor to row
         row = c.fetchone()
         try:
+            # getting the value of row[2] which is the BTC_Rate
             btcbalance = row[2]#float(input("\nENTER BTC BALANCE: "))
             dollarcost = row[3]#float(input("ENTER PHP COST: "))
             if row[6] == None:
@@ -505,4 +551,6 @@ def deleterecord(mysearch):
     searchrecord(None, None)
 
 if __name__=="__main__":
-    main()
+    clrscr()
+    update_progress(), main()
+    

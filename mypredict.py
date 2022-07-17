@@ -4,6 +4,7 @@ import sqlite3
 from bitcoinprice import getbitcoinprice
 import pandas as pd
 import matplotlib.pyplot as plt
+import time
 
 def mainconn():
     global conn, c
@@ -46,9 +47,19 @@ def myvisual():
     plt.show()
     
 def dbtocsvproc():
-    # This is only applicable for linux with installed sqlite3
+    # This command is only applicable for linux with installed sqlite3
     os.system("sqlite3 -header -csv bitcoindb.db \"select * from BITCOIN_TABLE;\" > BITCOIN_TABLE.csv")
-    
-dbtocsvproc()
+
+def loadbar(progress):
+    print("\r {0}>".format('>>>'*(progress//10), progress), end='')
+
+def update_progress():
+    print("\n\n\n\n\n\nLOAD:"), loadbar(10),time.sleep(1),loadbar(20),time.sleep(1),loadbar(30)
+    time.sleep(1),loadbar(40), time.sleep(1),loadbar(50), time.sleep(1)
+    loadbar(60),time.sleep(1),loadbar(70), time.sleep(1),loadbar(80)
+    time.sleep(1),loadbar(90), time.sleep(1),loadbar(100)
+
+#update_progress()
+#dbtocsvproc()
 #myvisual()
 #print(totalpredict())
