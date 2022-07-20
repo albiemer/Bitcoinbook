@@ -395,7 +395,7 @@ def entryrecord():
             currency = Currency
         
         
-        mypredict, currency, dollarcost, phpbalance, profitorloss = \
+        mypredict, currency, dollarcost, phpbalance, profitorloss =\
                    entryalgo(btcrate, btcbalance, currency, dollarcost)
         insertrecord(btcrate, btcbalance, dollarcost, phpbalance, profitorloss, currency, mypredict)
         
@@ -441,8 +441,7 @@ def updaterecord(mysearch):
             btcrateupdate = float(input("ENTE NEW BTC RATE: "))
             classconn.mainconn()
             c.execute("update BITCOIN_TABLE set BTC_Rate = ? where ID = ?", (btcrateupdate, idselection))
-            conn.commit()
-            conn.close()
+            connclose()
             
             printupdaterecord(idselection)
 
@@ -451,8 +450,7 @@ def updaterecord(mysearch):
             btcbalanceupdate = float(input("ENTER NEW BTC BALANCE: "))
             classconn.mainconn()
             c.execute("update BITCOIN_TABLE set BTC_Balance = ? where ID = ?", (btcbalanceupdate, idselection))
-            conn.commit()
-            conn.close()
+            connclose()
 
             printupdaterecord(idselection)
 
@@ -460,8 +458,7 @@ def updaterecord(mysearch):
             dollarcostupdate = float(input("ENTER NEW DOLLAR COST: "))
             classconn.mainconn()
             c.execute("update BITCOIN_TABLE set DOLLAR_Cost = ? where ID = ?", (dollarcostupdate, idselection))
-            conn.commit()
-            conn.close()
+            connclose()
 
             printupdaterecord(idselection)
         
@@ -469,8 +466,7 @@ def updaterecord(mysearch):
             phpbalanceupdate = float(input("ENTER NEW PHP BALANCE: "))
             classconn.mainconn()
             c.execute("update BITCOIN_TABLE set PHP_Balance = ? where ID = ?", (phpbalanceupdate, idselection,))
-            conn.commit()
-            conn.close()
+            connclose()
 
             printupdaterecord(idselection)
 
@@ -478,8 +474,7 @@ def updaterecord(mysearch):
             profitupdate = float(input("ENTER NEW PROFIT: "))
             classconn.mainconn()
             c.execute("update BITCOIN_TABLE set Profit_Or_Loss = ? where ID = ?", (profitupdate, idselection))
-            conn.commit()
-            conn.close()
+            connclose()
 
             printupdaterecord(idselection)
             
@@ -487,8 +482,7 @@ def updaterecord(mysearch):
             volumeupdate = float(input("ENTER NEW Volume: "))
             classconn.mainconn()
             c.execute("update BITCOIN_TABLE set Volume = ? where ID = ?", (volumeupdate, idselection))
-            conn.commit()
-            conn.close()
+            connclose()
             
             printupdaterecord(idselection)
 
@@ -536,8 +530,7 @@ def deleterecord(mysearch):
 
     c.execute("delete from BITCOIN_TABLE where ID = ?", (todelete,))
 
-    conn.commit()
-    conn.close()
+    connclose()
 
     print("\nDELETED SUCCESSFUL, PRESS ENTER TO REFRESH THE RECORD")
     input()
