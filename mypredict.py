@@ -48,6 +48,8 @@ def myvisual():
     
 def dbtocsvproc():
     # This command is only applicable for linux with installed sqlite3
+    # the sqlite3 are actual installed on the linux system as a terminal application
+    # aside from sqlite3 installed in pip3
     os.system("sqlite3 -header -csv bitcoindb.db \"select * from BITCOIN_TABLE;\" > BITCOIN_TABLE.csv")
 
 def loadbar(progress):
