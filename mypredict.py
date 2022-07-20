@@ -61,6 +61,20 @@ def update_progress():
     loadbar(60),time.sleep(1),loadbar(70), time.sleep(1),loadbar(80)
     time.sleep(1),loadbar(90), time.sleep(1),loadbar(100)
 
+def entryalgo(btcrate, btcbalance, currency, dollarcost):
+    dollarbalance = btcrate * btcbalance
+    phpbalance = float(dollarbalance) * currency
+    profitorloss = float(phpbalance) - (float(dollarcost) * currency)
+    #phpbalance = int(phpbalance)
+        
+    mypredict = round(totalpredict(), 2)
+    currency = round(currency, 2)
+    dollarcost = round(dollarcost, 2)
+    phpbalance = round(phpbalance, 2)
+    profitorloss = round(profitorloss, 2)
+    
+    return mypredict, currency, dollarcost, phpbalance, profitorloss
+
 #update_progress()
 #dbtocsvproc()
 #myvisual()

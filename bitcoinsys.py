@@ -35,7 +35,7 @@ from prettytable import PrettyTable, from_db_cursor
 from bitcoinprice import getbitcoinprice
 from note import noteonly, title, clrscr, nofoundrecordnote, foundrecordnote, opthead, entryinvalid
 from forex_python.converter import CurrencyRates
-from mypredict import totalpredict, myvisual, dbtocsvproc, update_progress
+from mypredict import totalpredict, myvisual, dbtocsvproc, update_progress, entryalgo
 import threading
 
 x = PrettyTable()
@@ -394,16 +394,9 @@ def entryrecord():
             dollarcost = btcrate * btcbalance #float(input("ENTER DOLLAR COST: "))
             currency = Currency
         
-        dollarbalance = btcrate * btcbalance
-        phpbalance = float(dollarbalance) * currency
-        profitorloss = float(phpbalance) - (float(dollarcost) * currency)
-        #phpbalance = int(phpbalance)
         
-        mypredict = round(totalpredict(), 2)
-        currency = round(currency, 2)
-        dollarcost = round(dollarcost, 2)
-        phpbalance = round(phpbalance, 2)
-        profitorloss = round(profitorloss, 2)
+        mypredict, currency, dollarcost, phpbalance, profitorloss = \
+                   entryalgo(btcrate, btcbalance, currency, dollarcost)
         insertrecord(btcrate, btcbalance, dollarcost, phpbalance, profitorloss, currency, mypredict)
         
     except:
