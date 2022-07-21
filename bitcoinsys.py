@@ -395,9 +395,8 @@ def entryrecord():
             currency = Currency
         
         
-        mypredict, currency, dollarcost, phpbalance, profitorloss =\
-                   entryalgo(btcrate, btcbalance, currency, dollarcost)
-        insertrecord(btcrate, btcbalance, dollarcost, phpbalance, profitorloss, currency, mypredict)
+        toinsert = entryalgo(btcrate, btcbalance, currency, dollarcost)
+        insertrecord(btcrate, btcbalance, toinsert[2], toinsert[3], toinsert[4], toinsert[1], toinsert[0])
         
     except:
         searchrecord(None, None)
