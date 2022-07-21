@@ -35,7 +35,11 @@ from prettytable import PrettyTable, from_db_cursor
 from bitcoinprice import getbitcoinprice
 from note import noteonly, title, clrscr, nofoundrecordnote, foundrecordnote, opthead, entryinvalid
 from forex_python.converter import CurrencyRates
-from mypredict import totalpredict, myvisual, dbtocsvproc, update_progress, entryalgo
+from mypredict import totalpredict, myvisual, dbtocsvproc, update_progress, entryalgo, \
+     sqlquerysearch, sqlqueryprintallrecord, sqlqueryprintlastrecord, sqlquerydataprint, \
+     sqlqueryinsertrecord, sqlquerybtcrateupdate, sqlquerybtcbalanceupdate, \
+     sqlquerydollarcostupdate, sqlqueryphpbalanceupdate, sqlqueryprofitupdate, \
+     sqlqueryphcurrencyupdate, sqlqueryprintupdaterecord, sqlquerydeleterecord
 import threading
 
 x = PrettyTable()
@@ -63,8 +67,6 @@ class classconn:
             printlastrecord()
         elif printlastinput == 'n' or printlastinput == 'N':
             main()
-        elif printlastinput == 'y' or printlastinput == 'Y':
-            printlastrecord()
         elif printlastinput in keydataprint:
             printlastrecord()
         else:
@@ -105,7 +107,7 @@ class classconn:
             del mysearch
     
     def updateoptlabel():
-        print("[1]BTC RATE\n[2]BTC BALANCE\n[3]DOLLAR COST\n[4]PHP BALANCE\n[5]PROFIT / LOSS\n[6]Volume")
+        print("[1]BTC RATE\n[2]BTC BALANCE\n[3]DOLLAR COST\n[4]PHP BALANCE\n[5]PROFIT / LOSS\n[6]PHP CURRENCY")
 
 
 # you can use this as one function but its not necessary
@@ -197,15 +199,7 @@ def searchrecord(asearch, toexit):
             mysearch = toexit
         global row
         
-        # The mainconn function are located at the top inside of class classconn()
-        classconn.mainconn()
-        
-        # This is to execute to find record from the database using sqlite3
-        c.execute("select * from BITCOIN_TABLE where ID=?",(mysearch,))
-        row = c.fetchone()
-        conn.rollback()
-        # To close database after execute from searchfunction()
-        conn.close()
+        row = sqlquerysearch(mysearch)
         
         # if you are at the menu of searchrecord() function and instead
         # of searching, you input 'n' or 'N' rather than input number and exit and,
@@ -299,14 +293,7 @@ def mycol(mysearch):
 # Printallrecord() function is to display a 15 records that started from 1 as
 # A initialized record data report from print all record
 def printallrecord():
-    # classconn.mainconn is a connection for sqlite3 database bitcoindb.db
-    classconn.mainconn()
-    # This is the execution to select from BITCOIN_TABLE in sqlite3 database
-    c.execute("select * from BITCOIN_TABLE limit 15")
-
-    x = from_db_cursor(c)
-    print(x)
-    conn.close()
+    print(sqlqueryprintallrecord())
 
 #------------printlastecord-----------#
 
@@ -315,39 +302,27 @@ def printlastrecord():
     clrscr()   #1
     # global declaration for variable row
     global row
-    # classconn.mainconn is a connection for sqlite3 database bitcoindb.db
-    classconn.mainconn()
     # This SQL execution is to select last record and only disply 1 row
     # which is the last record
-    c.execute("select * from BITCOIN_TABLE order by ID desc limit 1")
-    # assigning c.fetchone to row
-    row = c.fetchone()
+    row = sqlqueryprintlastrecord()
+    print(row)
     # calling mycol(None) function with None or empty parameters
     mycol(None)
-    # Closing the sqlite3 database connection 
-    connclose()
 
 # dataprint() function is to display selected started number of row to las record
 def dataprint():
     clrscr()    #1
     title()     #2
-    # classconn.mainconn is a connection for sqlite3 database bitcoindb.db
-    classconn.mainconn()
     # in case error in try then it will raise to except
     try:
         # Input id to start selected id to display record
         strtid = input("ENTER START ID: ")
-        # This sql command is for selecting record 100 row but started id setoff
-        # by strtid
-        c.execute("select * from BITCOIN_TABLE LIMIT 100 OFFSET {offid}".format(offid=strtid))
-        # assigning cursor c to x 
-        x = from_db_cursor(c)
-        # displaying x that resulted from the following above processs to display record 
-        print(x)
+        # classconn.mainconn is a connection for sqlite3 database bitcoindb.db
+        print(sqlquerydataprint(strtid))
         # classconn.dataprintoptcontrol() are located above inside class classconn    
         classconn.dataprintoptcontrol()
-        # Closing the sqlite3 database connection
-        connclose()
+        del strtid
+        
     # in case theres an error in try it will execute except
     except:
         # The main() function are located at the top next from connclose()
@@ -373,13 +348,7 @@ def entryrecord():
     # A initialized record data report from print all record
     printallrecord()
     try:
-        # classconn.mainconn is a connection for sqlite3 database bitcoindb.db
-        classconn.mainconn()
-        # To execute query to select from sqlite3 dbase which is the last record
-        # only selected from this query
-        c.execute("select * from BITCOIN_TABLE order by ID desc limit 1")
-        # assigning c cursor to row
-        row = c.fetchone()
+        row = sqlqueryprintlastrecord()
         try:
             # getting the value of row[2] which is the BTC_Rate
             btcbalance = row[2]#float(input("\nENTER BTC BALANCE: "))
@@ -402,14 +371,7 @@ def entryrecord():
         searchrecord(None, None)
 
 def insertrecord(btcrate, btcbalance, dollarcost, phpbalance, profitorloss, currency, mypredict):
-    global conn, c
-    
-    classconn.mainconn()
-    # this is an insert record execute for insert record function
-    c.execute("insert into BITCOIN_TABLE(BTC_Rate, BTC_Balance, DOLLAR_Cost, PHP_Balance, Profit_Or_Loss, PH_Currency, BTC_Predict) values (?,?,?,?,?,?,?)", (btcrate, btcbalance, dollarcost, phpbalance, profitorloss, currency, mypredict))
-    print("\nINSERTED DATA SUCCESSFULLY")
-    input()
-    connclose()
+    sqlqueryinsertrecord(btcrate, btcbalance, dollarcost, phpbalance, profitorloss, currency, mypredict)
     printlastrecord()
     
 #------------------------------------------------------------------------
@@ -438,50 +400,38 @@ def updaterecord(mysearch):
         myupdate = int(input("ENTER OPTION TO UPDATE: "))
         if myupdate == 1:
             btcrateupdate = float(input("ENTE NEW BTC RATE: "))
-            classconn.mainconn()
-            c.execute("update BITCOIN_TABLE set BTC_Rate = ? where ID = ?", (btcrateupdate, idselection))
-            connclose()
+            sqlquerybtcrateupdate(btcrateupdate, idselection)
             
             printupdaterecord(idselection)
 
         elif myupdate == 2:
         
             btcbalanceupdate = float(input("ENTER NEW BTC BALANCE: "))
-            classconn.mainconn()
-            c.execute("update BITCOIN_TABLE set BTC_Balance = ? where ID = ?", (btcbalanceupdate, idselection))
-            connclose()
+            sqlquerybtcbalanceupdate(btcbalanceupdate, idselection)
 
             printupdaterecord(idselection)
 
         elif myupdate == 3:
             dollarcostupdate = float(input("ENTER NEW DOLLAR COST: "))
-            classconn.mainconn()
-            c.execute("update BITCOIN_TABLE set DOLLAR_Cost = ? where ID = ?", (dollarcostupdate, idselection))
-            connclose()
+            sqlquerydollarcostupdate(dollarcostupdate, idselection)
 
             printupdaterecord(idselection)
         
         elif myupdate == 4:
             phpbalanceupdate = float(input("ENTER NEW PHP BALANCE: "))
-            classconn.mainconn()
-            c.execute("update BITCOIN_TABLE set PHP_Balance = ? where ID = ?", (phpbalanceupdate, idselection,))
-            connclose()
+            sqlqueryphpbalanceupdate(phpbalanceupdate, idselection)
 
             printupdaterecord(idselection)
 
         elif myupdate == 5:
             profitupdate = float(input("ENTER NEW PROFIT: "))
-            classconn.mainconn()
-            c.execute("update BITCOIN_TABLE set Profit_Or_Loss = ? where ID = ?", (profitupdate, idselection))
-            connclose()
+            sqlqueryprofitupdate(profitupdate, idselection)
 
             printupdaterecord(idselection)
             
         elif myupdate == 6:
-            volumeupdate = float(input("ENTER NEW Volume: "))
-            classconn.mainconn()
-            c.execute("update BITCOIN_TABLE set Volume = ? where ID = ?", (volumeupdate, idselection))
-            connclose()
+            phcurrencyupdate = float(input("ENTER NEW Volume: "))
+            sqlqueryphcurrencyupdate(phcurrencyupdate, idselection)
             
             printupdaterecord(idselection)
 
@@ -503,11 +453,7 @@ def updaterecord(mysearch):
 def printupdaterecord(x):
     mysearch = x
     global row
-    classconn.mainconn()
-    c.execute("select * from BITCOIN_TABLE where ID=?",(mysearch,))
-    row = c.fetchone()
-    conn.rollback()
-    conn.close()
+    row = sqlqueryprintupdaterecord(mysearch)
     #updaterecord()
     mycol(mysearch)
     del x
@@ -525,14 +471,8 @@ def deleterecord(mysearch):
         todelete = int(input("\n\nENTER ID TO DELETE: "))
     else:
         todelete = mysearch
-    classconn.mainconn()    
-
-    c.execute("delete from BITCOIN_TABLE where ID = ?", (todelete,))
-
-    connclose()
-
-    print("\nDELETED SUCCESSFUL, PRESS ENTER TO REFRESH THE RECORD")
-    input()
+        
+    sqlquerydeleterecord(todelete)
     searchrecord(None, None)
 
 if __name__=="__main__":
