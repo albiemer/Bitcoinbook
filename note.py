@@ -28,7 +28,8 @@ def opthead():
     print("[3] ADDNEW RECORD")
     print("[4] UPDATE RECORD")
     print("[5] VISUALIZATION")
-    print("[6] EXIT")
+    print("[6] DELETE ALL RECORDS")
+    print("[7] EXIT")
     
 def clrscr():
     os.system("clear")

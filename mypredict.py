@@ -198,6 +198,26 @@ def sqlquerydeleterecord(todelete):
     print("\nDELETED SUCCESSFUL, PRESS ENTER TO REFRESH THE RECORD")
     input()
 
+def sqlqueryuserconfirm(uname, pword):
+    conn = sqlite3.connect('bitcoindb.db')
+    c = conn.cursor()
+    c.execute("select * from USER where Username=? and Password=?",(uname, pword,))
+    row = c.fetchone()
+    conn.rollback()
+    conn.close()
+    return row
+
+def sqlquerydeleteallrecords():
+    conn = sqlite3.connect('bitcoindb.db')
+    c = conn.cursor()
+    c.execute("delete from BITCOIN_TABLE")
+    conn.commit()
+    conn.close()
+
+#we = sqlqueryuserconfirm('albiemer', 'albi3mer')
+#print(we[1], we[2])
+
+#sqlquerydeleteallrecords()
 #print(sqlqueryprintupdaterecord(2))
 
 #print(sqlquerybtcrateupdate(1,5))

@@ -37,7 +37,8 @@ from mypredict import myvisual, dbtocsvproc, entryalgo, \
      sqlquerysearch, sqlqueryprintallrecord, sqlqueryprintlastrecord, sqlquerydataprint, \
      sqlqueryinsertrecord, sqlquerybtcrateupdate, sqlquerybtcbalanceupdate, \
      sqlquerydollarcostupdate, sqlqueryphpbalanceupdate, sqlqueryprofitupdate, \
-     sqlqueryphcurrencyupdate, sqlqueryprintupdaterecord, sqlquerydeleterecord
+     sqlqueryphcurrencyupdate, sqlqueryprintupdaterecord, sqlquerydeleterecord, \
+     sqlqueryuserconfirm, sqlquerydeleteallrecords
 
 x = PrettyTable()
 errmain = 0
@@ -149,6 +150,9 @@ def main():
         # After process of dbtocsvproc() and myvisual() its automatically directed to main()
         main()
     elif opt == '6':
+        deleteallrecords()
+        
+    elif opt == '7':
         # this is an option to exit when you are at the main() function
         exit()
         
@@ -472,6 +476,24 @@ def deleterecord(mysearch):
         
     sqlquerydeleterecord(todelete)
     searchrecord(None, None)
+
+def deleteallrecords():
+    uname = input("ENTER USERNAME: ")
+    pword = input("ENTER PASSWORD: ")
+    
+    toconfirmuser = sqlqueryuserconfirm(uname, pword)
+    
+    if(toconfirmuser):
+        if uname == toconfirmuser[1] and pword == toconfirmuser[2]:
+            sqlquerydeleteallrecords()
+            print("ALL RECORDS DELETED, GRANTED BY ADMIN ACCOUNT")
+            input()
+            main()
+    else:
+        print("WRONG USERNAME OR PASSWORD")
+        input()
+        main()
+        del uname, pword
 
 if __name__=="__main__":
     main()
