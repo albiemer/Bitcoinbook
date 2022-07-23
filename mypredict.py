@@ -1,35 +1,34 @@
 
 import os
 import sqlite3
-from bitcoinprice import getbitcoinprice
-from prettytable import PrettyTable, from_db_cursor
+from prettytable import from_db_cursor
 import pandas as pd
 import matplotlib.pyplot as plt
-import time
+#import time
 
-def mainconn():
+"""def mainconn():
     global conn, c
     conn = sqlite3.connect('bitcoindb.db')
-    c = conn.cursor()
+    c = conn.cursor()"""
 
-def connclose():
-    conn.commit()
-    conn.close()
+        
 
 def mypredictdata():
-    mainconn()
+    conn = sqlite3.connect('bitcoindb.db')
+    c = conn.cursor()
     c.execute("select sum(BTC_RAte) from BITCOIN_TABLE")
     row = c.fetchone()
     return row[0]
     
 def todevide():
-    mainconn()
+    conn = sqlite3.connect('bitcoindb.db')
+    c = conn.cursor()
     c.execute("select count(ID) from BITCOIN_TABLE order by ID desc limit 1")
     row = c.fetchone()
     return row[0]
     
 def totalpredict():
-    btcrate = getbitcoinprice()
+    #btcrate = getbitcoinprice()
     try:
         result = mypredictdata() / todevide()
         result = round(result, 2)
@@ -56,15 +55,12 @@ def dbtocsvproc():
     # aside from sqlite3 installed in pip3
     os.system("sqlite3 -header -csv bitcoindb.db \"select * from BITCOIN_TABLE;\" > BITCOIN_TABLE.csv")
 
-def loadbar(progress):
-    print("\r {0}>".format('>>>'*(progress//10), progress), end='')
+"""def loadbar(progress):
+    print("\r {0}>".format('>>>'*(progress//10), progress), end='')"""
 
-def update_progress():
-    print("\n\n\n\n\n\nLOAD:"), loadbar(10),time.sleep(1),loadbar(20),time.sleep(1),loadbar(30)
-    time.sleep(1),loadbar(40), time.sleep(1),loadbar(50), time.sleep(1)
-    loadbar(60),time.sleep(1),loadbar(70), time.sleep(1),loadbar(80)
-    time.sleep(1),loadbar(90), time.sleep(1),loadbar(100)
-
+"""def update_progress():
+    print("\n\n\n\n\n\nLOAD:"), loadbar(100),time.sleep(10)"""
+    
 def entryalgo(btcrate, btcbalance, currency, dollarcost):
     dollarbalance = btcrate * btcbalance
     phpbalance = float(dollarbalance) * currency
@@ -81,7 +77,8 @@ def entryalgo(btcrate, btcbalance, currency, dollarcost):
 
 def sqlquerysearch(mysearch):
     # mainconn() is a connection for sqlite3 database bitcoindb.db
-    mainconn()
+    conn = sqlite3.connect('bitcoindb.db')
+    c = conn.cursor()
     # This is to execute to find record from the database using sqlite3
     c.execute("select * from BITCOIN_TABLE where ID=?",(mysearch,))
     row = c.fetchone()
@@ -92,7 +89,8 @@ def sqlquerysearch(mysearch):
 
 def sqlqueryprintallrecord():
     # mainconn() is a connection for sqlite3 database bitcoindb.db
-    mainconn()
+    conn = sqlite3.connect('bitcoindb.db')
+    c = conn.cursor()
     # This is the execution to select from BITCOIN_TABLE in sqlite3 database
     c.execute("select * from BITCOIN_TABLE limit 15")
 
@@ -102,70 +100,89 @@ def sqlqueryprintallrecord():
 
 def sqlqueryprintlastrecord():
     # classconn.mainconn is a connection for sqlite3 database bitcoindb.db
-    mainconn()
+    conn = sqlite3.connect('bitcoindb.db')
+    c = conn.cursor()
     # This SQL execution is to select last record and only disply 1 row
     # which is the last record
     c.execute("select * from BITCOIN_TABLE order by ID desc limit 1")
     # assigning c.fetchone to row
     row = c.fetchone()
     # Closing the sqlite3 database connection 
-    connclose()
+    conn.commit()
+    conn.close()
     return row
     
 
 def sqlquerydataprint(strtid):
     # classconn.mainconn is a connection for sqlite3 database bitcoindb.db
-        mainconn()
-        # This sql command is for selecting record 100 row but started id setoff
-        # by strtid
-        c.execute("select * from BITCOIN_TABLE LIMIT 100 OFFSET {offid}".format(offid=strtid))
-        # assigning cursor c to x 
-        x = from_db_cursor(c)
-        # displaying x that resulted from the following above processs to display record 
-        connclose()
-        return x
+    conn = sqlite3.connect('bitcoindb.db')
+    c = conn.cursor()
+    # This sql command is for selecting record 100 row but started id setoff
+    # by strtid
+    c.execute("select * from BITCOIN_TABLE LIMIT 100 OFFSET {offid}".format(offid=strtid))
+    # assigning cursor c to x 
+    x = from_db_cursor(c)
+    # displaying x that resulted from the following above processs to display record 
+    conn.commit()
+    conn.close()
+    return x
 
 def sqlqueryinsertrecord(btcrate, btcbalance, dollarcost, phpbalance, \
                          profitorloss, currency, mypredict):
-    mainconn()
+    conn = sqlite3.connect('bitcoindb.db')
+    c = conn.cursor()
     # this is an insert record execute for insert record function
     c.execute("insert into BITCOIN_TABLE(BTC_Rate, BTC_Balance, DOLLAR_Cost, PHP_Balance, Profit_Or_Loss, PH_Currency, BTC_Predict) values (?,?,?,?,?,?,?)", (btcrate, btcbalance, dollarcost, phpbalance, profitorloss, currency, mypredict))
     print("\nINSERTED DATA SUCCESSFULLY")
     input()
-    connclose()
+    conn.commit()
+    conn.close()
 
 def sqlquerybtcrateupdate(btcrateupdate, idselection):
-    mainconn()
+    conn = sqlite3.connect('bitcoindb.db')
+    c = conn.cursor()
     c.execute("update BITCOIN_TABLE set BTC_Rate = ? where ID = ?", (btcrateupdate, idselection))
-    connclose()
+    conn.commit()
+    conn.close()
 
 def sqlquerybtcbalanceupdate(btcbalanceupdate, idselection):
-    mainconn()
+    conn = sqlite3.connect('bitcoindb.db')
+    c = conn.cursor()
     c.execute("update BITCOIN_TABLE set BTC_Balance = ? where ID = ?", (btcbalanceupdate, idselection))
-    connclose()
+    conn.commit()
+    conn.close()
 
 def sqlquerydollarcostupdate(dollarcostupdate, idselection):
-    mainconn()
+    conn = sqlite3.connect('bitcoindb.db')
+    c = conn.cursor()
     c.execute("update BITCOIN_TABLE set DOLLAR_Cost = ? where ID = ?", (dollarcostupdate, idselection))
-    connclose()
+    conn.commit()
+    conn.close()
 
 def sqlqueryphpbalanceupdate(phpbalanceupdate, idselection):
-    mainconn()
+    conn = sqlite3.connect('bitcoindb.db')
+    c = conn.cursor()
     c.execute("update BITCOIN_TABLE set PHP_Balance = ? where ID = ?", (phpbalanceupdate, idselection,))
-    connclose()
+    conn.commit()
+    conn.close()
 
 def sqlqueryprofitupdate(profitupdate, idselection):
-    mainconn()
+    conn = sqlite3.connect('bitcoindb.db')
+    c = conn.cursor()
     c.execute("update BITCOIN_TABLE set Profit_Or_Loss = ? where ID = ?", (profitupdate, idselection))
-    connclose()
+    conn.commit()
+    conn.close()
     
 def sqlqueryphcurrencyupdate(phcurrencyupdate, idselection):
-    mainconn()
+    conn = sqlite3.connect('bitcoindb.db')
+    c = conn.cursor()
     c.execute("update BITCOIN_TABLE set PH_Currency = ? where ID = ?", (phcurrencyupdate, idselection))
-    connclose()
+    conn.commit()
+    conn.close()
 
 def sqlqueryprintupdaterecord(mysearch):
-    mainconn()
+    conn = sqlite3.connect('bitcoindb.db')
+    c = conn.cursor()
     c.execute("select * from BITCOIN_TABLE where ID=?",(mysearch,))
     row = c.fetchone()
     conn.rollback()
@@ -173,9 +190,11 @@ def sqlqueryprintupdaterecord(mysearch):
     return row
 
 def sqlquerydeleterecord(todelete):
-    mainconn()    
+    conn = sqlite3.connect('bitcoindb.db')
+    c = conn.cursor()
     c.execute("delete from BITCOIN_TABLE where ID = ?", (todelete,))
-    connclose()
+    conn.commit()
+    conn.close()
     print("\nDELETED SUCCESSFUL, PRESS ENTER TO REFRESH THE RECORD")
     input()
 

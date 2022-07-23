@@ -28,19 +28,16 @@ bitcoinsys.py see the meaning according to the number declared in multi comment
 
 """
 
-from time import sleep
-
 import sqlite3
-from prettytable import PrettyTable, from_db_cursor
+from prettytable import PrettyTable
 from bitcoinprice import getbitcoinprice
 from note import noteonly, title, clrscr, nofoundrecordnote, foundrecordnote, opthead, entryinvalid
 from forex_python.converter import CurrencyRates
-from mypredict import totalpredict, myvisual, dbtocsvproc, update_progress, entryalgo, \
+from mypredict import myvisual, dbtocsvproc, entryalgo, \
      sqlquerysearch, sqlqueryprintallrecord, sqlqueryprintlastrecord, sqlquerydataprint, \
      sqlqueryinsertrecord, sqlquerybtcrateupdate, sqlquerybtcbalanceupdate, \
      sqlquerydollarcostupdate, sqlqueryphpbalanceupdate, sqlqueryprofitupdate, \
      sqlqueryphcurrencyupdate, sqlqueryprintupdaterecord, sqlquerydeleterecord
-import threading
 
 x = PrettyTable()
 errmain = 0
@@ -154,6 +151,7 @@ def main():
     elif opt == '6':
         # this is an option to exit when you are at the main() function
         exit()
+        
     elif opt == 'y' or opt == 'Y':
         clrscr()   #1
         main()
@@ -232,7 +230,7 @@ def searchrecord(asearch, toexit):
         
         # After processed not record found the variable searchagain input will
         # appear 
-        searchagain = input("\n[n]To MAIN MENU\n[enter] SEARCH RECORD:")
+        searchagain = input("\n[n]To MAIN MENU\nSEARCH RECORD:")
         
         # If record not found from the database you can still exit from
         # searchrecord() function by input 'n' or 'N' and back to the main()
@@ -476,6 +474,4 @@ def deleterecord(mysearch):
     searchrecord(None, None)
 
 if __name__=="__main__":
-    clrscr()
-    update_progress(), main()
-    
+    main()
