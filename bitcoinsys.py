@@ -39,6 +39,8 @@ from mypredict import myvisual, dbtocsvproc, entryalgo, \
      sqlquerydollarcostupdate, sqlqueryphpbalanceupdate, sqlqueryprofitupdate, \
      sqlqueryphcurrencyupdate, sqlqueryprintupdaterecord, sqlquerydeleterecord, \
      sqlqueryuserconfirm, sqlquerydeleteallrecords
+import getpass
+
 
 x = PrettyTable()
 errmain = 0
@@ -479,7 +481,7 @@ def deleterecord(mysearch):
 
 def deleteallrecords():
     uname = input("ENTER USERNAME: ")
-    pword = input("ENTER PASSWORD: ")
+    pword = getpass.getpass("ENTER PASSWORD: ")
     
     toconfirmuser = sqlqueryuserconfirm(uname, pword)
     
