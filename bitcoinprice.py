@@ -12,3 +12,4 @@ def getbitcoinprice():
     
     except requests.ConnectionError:
         print ("Error querying Bitstamp API")
+        return None

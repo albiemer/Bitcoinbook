@@ -11,7 +11,54 @@ import matplotlib.pyplot as plt
     conn = sqlite3.connect('bitcoindb.db')
     c = conn.cursor()"""
 
-        
+class sqlquery:
+    def __init__(self, toupdate, idselection):
+        self.toupdate = toupdate
+        self.idselection = idselection
+    
+    def btcrateupdate(self):
+        conn = sqlite3.connect('bitcoindb.db')
+        c = conn.cursor()
+        c.execute("update BITCOIN_TABLE set BTC_Rate = ? where ID = ?", (self.toupdate, self.idselection))
+        conn.commit()
+        conn.close()
+
+    def btcbalanceupdate(self):
+        conn = sqlite3.connect('bitcoindb.db')
+        c = conn.cursor()
+        c.execute("update BITCOIN_TABLE set BTC_Balance = ? where ID = ?", (self.toupdate, self.idselection))
+        conn.commit()
+        conn.close()
+
+    def dollarcostupdate(self):
+        conn = sqlite3.connect('bitcoindb.db')
+        c = conn.cursor()
+        c.execute("update BITCOIN_TABLE set DOLLAR_Cost = ? where ID = ?", (self.toupdate, self.idselection))
+        conn.commit()
+        conn.close()
+
+    def phpbalanceupdate(self):
+        conn = sqlite3.connect('bitcoindb.db')
+        c = conn.cursor()
+        c.execute("update BITCOIN_TABLE set PHP_Balance = ? where ID = ?", (self.toupdate, self.idselection,))
+        conn.commit()
+        conn.close()
+
+    def profitupdate(self):
+        conn = sqlite3.connect('bitcoindb.db')
+        c = conn.cursor()
+        c.execute("update BITCOIN_TABLE set Profit_Or_Loss = ? where ID = ?", (self.toupdate, self.idselection))
+        conn.commit()
+        conn.close()
+
+    def phcurrencyupdate(self):
+        conn = sqlite3.connect('bitcoindb.db')
+        c = conn.cursor()
+        c.execute("update BITCOIN_TABLE set PH_Currency = ? where ID = ?", (self.toupdate, self.idselection))
+        conn.commit()
+        conn.close()
+
+
 
 def mypredictdata():
     conn = sqlite3.connect('bitcoindb.db')
@@ -55,6 +102,9 @@ def dbtocsvproc():
     # aside from sqlite3 installed in pip3
     os.system("sqlite3 -header -csv bitcoindb.db \"select * from BITCOIN_TABLE;\" > BITCOIN_TABLE.csv")
 
+def csvwipe():
+    os.system("rm BITCOIN_TABLE.csv")
+
 """def loadbar(progress):
     print("\r {0}>".format('>>>'*(progress//10), progress), end='')"""
 
@@ -86,6 +136,7 @@ def sqlquerysearch(mysearch):
     # To close database after execute from searchfunction()
     conn.close()
     return row
+#print(sqlquerysearch(2)[0])
 
 def sqlqueryprintallrecord():
     # mainconn() is a connection for sqlite3 database bitcoindb.db
@@ -96,7 +147,7 @@ def sqlqueryprintallrecord():
 
     x = from_db_cursor(c)
     conn.close()
-    return x
+    print(x)
 
 def sqlqueryprintlastrecord():
     # classconn.mainconn is a connection for sqlite3 database bitcoindb.db
@@ -111,7 +162,8 @@ def sqlqueryprintlastrecord():
     conn.commit()
     conn.close()
     return row
-    
+
+#print(sqlqueryprintlastrecord())
 
 def sqlquerydataprint(strtid):
     # classconn.mainconn is a connection for sqlite3 database bitcoindb.db
@@ -127,6 +179,8 @@ def sqlquerydataprint(strtid):
     conn.close()
     return x
 
+#print(sqlquerydataprint(2))
+
 def sqlqueryinsertrecord(btcrate, btcbalance, dollarcost, phpbalance, \
                          profitorloss, currency, mypredict):
     conn = sqlite3.connect('bitcoindb.db')
@@ -138,48 +192,6 @@ def sqlqueryinsertrecord(btcrate, btcbalance, dollarcost, phpbalance, \
     conn.commit()
     conn.close()
 
-def sqlquerybtcrateupdate(btcrateupdate, idselection):
-    conn = sqlite3.connect('bitcoindb.db')
-    c = conn.cursor()
-    c.execute("update BITCOIN_TABLE set BTC_Rate = ? where ID = ?", (btcrateupdate, idselection))
-    conn.commit()
-    conn.close()
-
-def sqlquerybtcbalanceupdate(btcbalanceupdate, idselection):
-    conn = sqlite3.connect('bitcoindb.db')
-    c = conn.cursor()
-    c.execute("update BITCOIN_TABLE set BTC_Balance = ? where ID = ?", (btcbalanceupdate, idselection))
-    conn.commit()
-    conn.close()
-
-def sqlquerydollarcostupdate(dollarcostupdate, idselection):
-    conn = sqlite3.connect('bitcoindb.db')
-    c = conn.cursor()
-    c.execute("update BITCOIN_TABLE set DOLLAR_Cost = ? where ID = ?", (dollarcostupdate, idselection))
-    conn.commit()
-    conn.close()
-
-def sqlqueryphpbalanceupdate(phpbalanceupdate, idselection):
-    conn = sqlite3.connect('bitcoindb.db')
-    c = conn.cursor()
-    c.execute("update BITCOIN_TABLE set PHP_Balance = ? where ID = ?", (phpbalanceupdate, idselection,))
-    conn.commit()
-    conn.close()
-
-def sqlqueryprofitupdate(profitupdate, idselection):
-    conn = sqlite3.connect('bitcoindb.db')
-    c = conn.cursor()
-    c.execute("update BITCOIN_TABLE set Profit_Or_Loss = ? where ID = ?", (profitupdate, idselection))
-    conn.commit()
-    conn.close()
-    
-def sqlqueryphcurrencyupdate(phcurrencyupdate, idselection):
-    conn = sqlite3.connect('bitcoindb.db')
-    c = conn.cursor()
-    c.execute("update BITCOIN_TABLE set PH_Currency = ? where ID = ?", (phcurrencyupdate, idselection))
-    conn.commit()
-    conn.close()
-
 def sqlqueryprintupdaterecord(mysearch):
     conn = sqlite3.connect('bitcoindb.db')
     c = conn.cursor()
@@ -188,6 +200,8 @@ def sqlqueryprintupdaterecord(mysearch):
     conn.rollback()
     conn.close()
     return row
+
+#print(sqlqueryprintupdaterecord(21)[0])
 
 def sqlquerydeleterecord(todelete):
     conn = sqlite3.connect('bitcoindb.db')
