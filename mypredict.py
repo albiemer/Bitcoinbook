@@ -110,16 +110,17 @@ def csvwipe():
 
 """def update_progress():
     print("\n\n\n\n\n\nLOAD:"), loadbar(100),time.sleep(10)"""
-    
-def entryalgo(btcrate, btcbalance, currency, dollarcost):
-    dollarbalance = btcrate * btcbalance
-    phpbalance = float(dollarbalance) * currency
-    profitorloss = float(phpbalance) - (float(dollarcost) * currency)
+
+            # *btcrate, btcbalance, currency, dollarcost
+def entryalgo(*entalgo):
+    dollarbalance = entalgo[0] * entalgo[1]
+    phpbalance = float(dollarbalance) * entalgo[2]
+    profitorloss = float(phpbalance) - (float(entalgo[3]) * entalgo[2])
     #phpbalance = int(phpbalance)
         
     mypredict = round(totalpredict(), 2)
-    currency = round(currency, 2)
-    dollarcost = round(dollarcost, 2)
+    currency = round(entalgo[2], 2)
+    dollarcost = round(entalgo[3], 2)
     phpbalance = round(phpbalance, 2)
     profitorloss = round(profitorloss, 2)
     
@@ -180,13 +181,14 @@ def sqlquerydataprint(strtid):
     return x
 
 #print(sqlquerydataprint(2))
-
-def sqlqueryinsertrecord(btcrate, btcbalance, dollarcost, phpbalance, \
-                         profitorloss, currency, mypredict):
+# btcrate, btcbalance, dollarcost, phpbalance, profitorloss, currency, mypredict
+def sqlqueryinsertrecord(*insertrecord):
     conn = sqlite3.connect('bitcoindb.db')
     c = conn.cursor()
     # this is an insert record execute for insert record function
-    c.execute("insert into BITCOIN_TABLE(BTC_Rate, BTC_Balance, DOLLAR_Cost, PHP_Balance, Profit_Or_Loss, PH_Currency, BTC_Predict) values (?,?,?,?,?,?,?)", (btcrate, btcbalance, dollarcost, phpbalance, profitorloss, currency, mypredict))
+    c.execute("insert into BITCOIN_TABLE(BTC_Rate, BTC_Balance, DOLLAR_Cost, PHP_Balance, Profit_Or_Loss, PH_Currency, BTC_Predict) values (?,?,?,?,?,?,?)", \
+              (insertrecord[0], insertrecord[1], insertrecord[2], insertrecord[3], \
+               insertrecord[4], insertrecord[5], insertrecord[6]))
     print("\nINSERTED DATA SUCCESSFULLY")
     input()
     conn.commit()
@@ -211,11 +213,13 @@ def sqlquerydeleterecord(todelete):
     conn.close()
     print("\nDELETED SUCCESSFUL, PRESS ENTER TO REFRESH THE RECORD")
     input()
-
-def sqlqueryuserconfirm(uname, pword):
+        
+                    #   uname, pword
+def sqlqueryuserconfirm(*userconfirm):
     conn = sqlite3.connect('bitcoindb.db')
     c = conn.cursor()
-    c.execute("select * from USER where Username=? and Password=?",(uname, pword,))
+    c.execute("select * from USER where Username=? and Password=?", \
+              (userconfirm[0], userconfirm[1],))
     row = c.fetchone()
     conn.rollback()
     conn.close()
