@@ -201,37 +201,43 @@ def updaterecord(mysearch, updatenote):
         if myupdate == '1':
             btcrateupdate = float(input("ENTER NEW BTC RATE: "))
             sqlquery(btcrateupdate, idselection).btcrateupdate()
-            print("RECORD UPDATED, ENTER TO CONTINUE"), input()
+            print("RECORD UPDATED, ENTER TO CONTINUE")
+            input()
             printupdaterecord(idselection)
 
         elif myupdate == '2':
             btcbalanceupdate = float(input("ENTER NEW BTC BALANCE: "))
             sqlquery(btcbalanceupdate, idselection).btcbalanceupdate()
-            print("RECORD UPDATED, ENTER TO CONTINUE"), input()
+            print("RECORD UPDATED, ENTER TO CONTINUE")
+            input()
             printupdaterecord(idselection)
 
         elif myupdate == '3':
             dollarcostupdate = float(input("ENTER NEW DOLLAR COST: "))
             sqlquery(dollarcostupdate, idselection).dollarcostupdate()
-            print("RECORD UPDATED, ENTER TO CONTINUE"), input()
+            print("RECORD UPDATED, ENTER TO CONTINUE")
+            input()
             printupdaterecord(idselection)
         
         elif myupdate == '4':
             phpbalanceupdate = float(input("ENTER NEW PHP BALANCE: "))
             sqlquery(phpbalanceupdate, idselection).phpbalanceupdate()
-            print("RECORD UPDATED, ENTER TO CONTINUE"), input()
+            print("RECORD UPDATED, ENTER TO CONTINUE")
+            input()
             printupdaterecord(idselection)
 
         elif myupdate == '5':
             profitupdate = float(input("ENTER NEW PROFIT: "))
             sqlquery(profitupdate, idselection).profitupdate()
-            print("RECORD UPDATED, ENTER TO CONTINUE"), input()
+            print("RECORD UPDATED, ENTER TO CONTINUE")
+            input()
             printupdaterecord(idselection)
             
         elif myupdate == '6':
             phcurrencyupdate = float(input("ENTER NEW PHP CURRENCY: "))
             sqlquery(phcurrencyupdate, idselection).phcurrencyupdate()
-            print("RECORD UPDATED, ENTER TO CONTINUE"), input()
+            print("RECORD UPDATED, ENTER TO CONTINUE")
+            input()
             printupdaterecord(idselection)
         
         elif myupdate == 'n' or myupdate == 'N':
